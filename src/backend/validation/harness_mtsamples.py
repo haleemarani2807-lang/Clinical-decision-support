@@ -328,7 +328,7 @@ async def validate_mtsamples(
                 "num_conflicts": len(report.conflicts) if report.conflicts else 0,
             }
 
-            print(f"✓ fields={scores['field_completeness']:.0%} dx={len(report.differential_diagnosis)} ({elapsed_ms}ms)")
+            print(f"+ fields={scores['field_completeness']:.0%} dx={len(report.differential_diagnosis)} ({elapsed_ms}ms)")
         else:
             scores.update({
                 "has_differential": 0.0,
@@ -338,7 +338,7 @@ async def validate_mtsamples(
                 "conflict_detection_ran": 0.0,
             })
             details = {"specialty": specialty, "error": error}
-            print(f"✗ FAILED: {error[:80] if error else 'unknown'}")
+            print(f"- FAILED: {error[:80] if error else 'unknown'}")
 
         result = ValidationResult(
             case_id=case.case_id,

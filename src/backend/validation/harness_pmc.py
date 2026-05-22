@@ -398,9 +398,11 @@ async def validate_pmc(
                 "all_diagnoses": [d.diagnosis for d in report.differential_diagnosis[:5]],
             }
 
-            icon = "✓" if found_any else "✗"
+            icon = "+" if found_any else "-"
             top_dx = report.differential_diagnosis[0].diagnosis if report.differential_diagnosis else "NONE"
-            print(f"{icon} top1={'Y' if found_top1 else 'N'} diag={'Y' if found_any else 'N'} | top: {top_dx[:30]} ({elapsed_ms}ms)")
+            # Sanitize for Windows console encoding
+            safe_dx = top_dx[:30].encode('ascii', errors='replace').decode('ascii')
+            print(f"{icon} top1={'Y' if found_top1 else 'N'} diag={'Y' if found_any else 'N'} | top: {safe_dx} ({elapsed_ms}ms)")
         else:
             scores = {
                 "diagnostic_accuracy": 0.0,
@@ -410,7 +412,7 @@ async def validate_pmc(
                 "has_recommendations": 0.0,
             }
             details = {"target_diagnosis": target_diagnosis, "error": error}
-            print(f"✗ FAILED: {error[:80] if error else 'unknown'}")
+            print(f"- FAILED: {error[:80] if error else 'unknown'}")
 
         result = ValidationResult(
             case_id=case.case_id,

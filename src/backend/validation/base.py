@@ -105,11 +105,13 @@ async def run_cds_pipeline(
     )
     orchestrator = Orchestrator()
 
-    try:
+    async def _run_pipeline() -> Optional[CDSReport]:
         async for _step_update in orchestrator.run(case):
             pass  # consume all step updates
+        return orchestrator.get_result()
 
-        report = orchestrator.get_result()
+    try:
+        report = await asyncio.wait_for(_run_pipeline(), timeout=timeout_sec)
 
         # If no report was produced, collect errors from failed steps
         if report is None and orchestrator.state:

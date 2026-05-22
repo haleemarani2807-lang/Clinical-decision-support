@@ -32,6 +32,13 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Force UTF-8 stdout/stderr on Windows to avoid cp1252 encoding errors
+# when LLM output contains Unicode characters (e.g., Greek letters in diagnoses)
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # Ensure backend is importable
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 if str(BACKEND_DIR) not in sys.path:

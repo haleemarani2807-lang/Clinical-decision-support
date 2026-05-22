@@ -56,12 +56,12 @@ async def main():
         # Verify all 6 pipeline steps are present
         step_ids = [s["step_id"] for s in steps]
         expected_steps = [
-            "parse_patient",
-            "clinical_reasoning",
-            "drug_interactions",
-            "guideline_retrieval",
-            "conflict_detection",
-            "synthesis",
+            "parse",
+            "reason",
+            "drugs",
+            "guidelines",
+            "conflicts",
+            "synthesize",
         ]
         assert len(steps) == 6, f"Expected 6 steps, got {len(steps)}: {step_ids}"
         for exp in expected_steps:
