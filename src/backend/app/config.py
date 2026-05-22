@@ -27,7 +27,11 @@ class Settings(BaseSettings):
     ]
 
     # MedGemma
-    medgemma_model_id: str = "google/medgemma"
+    # Model ID varies by backend (env override wins):
+    #   - HuggingFace TGI / Inference Endpoints: "tgi"
+    #   - Google AI Studio (OpenAI-compatible): "google/medgemma-27b-text-it"
+    #   - Local transformers: full model path, e.g. "google/medgemma-4b-it"
+    medgemma_model_id: str = "google/medgemma-27b-text-it"
     medgemma_api_key: str = ""
     medgemma_base_url: str = ""  # For API-based access
     medgemma_device: str = "auto"  # "cpu", "cuda", "auto"
@@ -46,7 +50,9 @@ class Settings(BaseSettings):
 
     # Agent
     agent_max_retries: int = 2
-    agent_timeout_seconds: int = 120
+    # Wall-clock timeout for the orchestrator pipeline (used by validation harness).
+    # Observed baseline: ~75–90s; allow headroom for cold-start + complex cases.
+    agent_timeout_seconds: int = 180
     agent_max_steps: int = 10
     default_include_drug_check: bool = True
     default_include_guidelines: bool = True

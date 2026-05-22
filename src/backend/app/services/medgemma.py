@@ -42,10 +42,25 @@ class MedGemmaService:
         structured = await service.generate_structured("...", ResponseModel)
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
+        model_id: Optional[str] = None,
+    ):
+        """
+        Args:
+            base_url: Override settings.medgemma_base_url (e.g. for benchmarking
+                a candidate endpoint side-by-side with baseline).
+            api_key: Override settings.medgemma_api_key.
+            model_id: Override settings.medgemma_model_id.
+        """
         self._client = None
         self._local_model = None
-        self._mode = "api" if settings.medgemma_base_url else "local"
+        self._base_url = base_url if base_url is not None else settings.medgemma_base_url
+        self._api_key = api_key if api_key is not None else settings.medgemma_api_key
+        self._model_id = model_id if model_id is not None else settings.medgemma_model_id
+        self._mode = "api" if self._base_url else "local"
 
     async def _get_client(self):
         """Lazy-initialize the API client."""
@@ -53,8 +68,8 @@ class MedGemmaService:
             try:
                 from openai import AsyncOpenAI
                 self._client = AsyncOpenAI(
-                    api_key=settings.medgemma_api_key or "not-needed",
-                    base_url=settings.medgemma_base_url or "http://localhost:8000/v1",
+                    api_key=self._api_key or "not-needed",
+                    base_url=self._base_url or "http://localhost:8000/v1",
                 )
             except ImportError:
                 raise RuntimeError(
@@ -74,7 +89,7 @@ class MedGemmaService:
         try:
             client = await self._get_client()
             response = await client.chat.completions.create(
-                model=settings.medgemma_model_id,
+                model=self._model_id,
                 messages=[{"role": "user", "content": "ping"}],
                 max_tokens=1,
                 temperature=0.0,
@@ -206,9 +221,11 @@ class MedGemmaService:
                     f"{response_model.__name__}: {last_error} (raw output redacted — privacy mode)"
                 )
             else:
+                # Raw model output may echo patient context; truncate aggressively
+                # and only include in debug-level logging contexts.
                 logger.warning(
                     f"generate_structured attempt {attempt + 1} failed for "
-                    f"{response_model.__name__}: {last_error}. Raw: {raw[:300]}"
+                    f"{response_model.__name__}: {last_error}. Raw (first 200 chars): {raw[:200]}"
                 )
 
         raise ValueError(
@@ -242,7 +259,7 @@ class MedGemmaService:
         for attempt in range(MAX_API_RETRIES):
             try:
                 response = await client.chat.completions.create(
-                    model=settings.medgemma_model_id,
+                    model=self._model_id,
                     messages=messages,
                     max_tokens=max_tokens,
                     temperature=temperature,
@@ -260,7 +277,7 @@ class MedGemmaService:
                     ]
                     try:
                         response = await client.chat.completions.create(
-                            model=settings.medgemma_model_id,
+                            model=self._model_id,
                             messages=fallback_messages,
                             max_tokens=max_tokens,
                             temperature=temperature,
