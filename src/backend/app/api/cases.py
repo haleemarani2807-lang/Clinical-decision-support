@@ -4,12 +4,14 @@ REST API for case submission and result retrieval.
 from __future__ import annotations
 
 import asyncio
+import time
 import uuid
 from typing import Dict
 
 from fastapi import APIRouter, HTTPException
 
 from app.agent.orchestrator import Orchestrator
+from app.config import settings
 from app.models.schemas import (
     AgentState,
     CaseResponse,
@@ -22,6 +24,19 @@ router = APIRouter()
 # In-memory store for active/completed cases
 # In production, use Redis or a database
 _cases: Dict[str, Orchestrator] = {}
+_case_timestamps: Dict[str, float] = {}
+
+
+def _evict_expired_cases() -> None:
+    """Remove cases older than TTL (only enforced when privacy_mode=True)."""
+    if not settings.privacy_mode:
+        return
+    now = time.time()
+    ttl = settings.case_ttl_seconds
+    expired = [cid for cid, ts in _case_timestamps.items() if now - ts > ttl]
+    for cid in expired:
+        _cases.pop(cid, None)
+        _case_timestamps.pop(cid, None)
 
 
 @router.post("/submit", response_model=CaseResponse)

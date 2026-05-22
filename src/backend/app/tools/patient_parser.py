@@ -68,7 +68,14 @@ class PatientParserTool:
             if settings.privacy_mode:
                 logger.info("Parsed patient profile (content redacted — privacy mode)")
             else:
-                logger.info(f"Parsed patient profile: {profile.chief_complaint}")
+                # Even outside privacy mode, avoid logging full chief complaint text.
+                num_meds = len(profile.current_medications or [])
+                num_allergies = len(profile.allergies or [])
+                cc_preview = (profile.chief_complaint or "")[:40]
+                logger.info(
+                    f"Parsed patient profile: cc='{cc_preview}…' "
+                    f"({num_meds} meds, {num_allergies} allergies)"
+                )
             return profile
 
         except Exception as e:
