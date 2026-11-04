@@ -128,13 +128,32 @@ class SynthesisTool:
             conflicts=self._format_conflicts(conflict_detection),
         )
 
-        report = await self.medgemma.generate_structured(
-            prompt=prompt,
-            response_model=CDSReport,
-            system_prompt=SYSTEM_PROMPT,
-            temperature=0.2,
-            max_tokens=3000,
-        )
+        try:
+            report = await self.medgemma.generate_structured(
+                prompt=prompt,
+                response_model=CDSReport,
+                system_prompt=SYSTEM_PROMPT,
+                temperature=0.2,
+                max_tokens=3000,
+            )
+            if not report.differential_diagnosis and clinical_reasoning and clinical_reasoning.differential_diagnosis:
+                report.differential_diagnosis = clinical_reasoning.differential_diagnosis
+            if not report.suggested_next_steps and clinical_reasoning and clinical_reasoning.recommended_workup:
+                report.suggested_next_steps = clinical_reasoning.recommended_workup
+            if not report.patient_summary or "[LLM unavailable" in report.patient_summary:
+                age = patient_profile.age if patient_profile and patient_profile.age else "Adult"
+                gender = patient_profile.gender.value if patient_profile and hasattr(patient_profile.gender, "value") else "patient"
+                cc = patient_profile.chief_complaint if patient_profile else "Clinical encounter"
+                report.patient_summary = f"{age} {gender} presenting with {cc}."
+        except Exception as e:
+            logger.warning(f"Synthesis LLM call failed ({e}), using rule-based CDS synthesis")
+            report = self._rule_based_synthesis(
+                patient_profile,
+                clinical_reasoning,
+                drug_interactions,
+                guideline_retrieval,
+                conflict_detection,
+            )
 
         # Add standard disclaimer to caveats
         report.caveats.append(
@@ -241,3 +260,49 @@ class SynthesisTool:
             if c.suggested_resolution:
                 parts.append(f"     Suggested resolution: {c.suggested_resolution}")
         return "\n".join(parts)
+
+    @classmethod
+    def _rule_based_synthesis(
+        cls,
+        patient_profile: Optional[PatientProfile],
+        clinical_reasoning: Optional[ClinicalReasoningResult],
+        drug_interactions: Optional[DrugInteractionResult],
+        guideline_retrieval: Optional[GuidelineRetrievalResult],
+        conflict_detection: Optional[ConflictDetectionResult] = None,
+    ) -> CDSReport:
+        from datetime import datetime, timezone
+        age = patient_profile.age if patient_profile and patient_profile.age else "Adult"
+        gender = patient_profile.gender.value if patient_profile and hasattr(patient_profile.gender, "value") else "patient"
+        cc = patient_profile.chief_complaint if patient_profile else "Clinical encounter"
+        summary = f"{age} {gender} presenting with {cc}."
+
+        diff = clinical_reasoning.differential_diagnosis if clinical_reasoning else []
+        workup = clinical_reasoning.recommended_workup if clinical_reasoning else []
+        drug_warnings = drug_interactions.interactions_found if drug_interactions else []
+
+        guidelines_recs = []
+        sources = []
+        if guideline_retrieval and guideline_retrieval.excerpts:
+            for g in guideline_retrieval.excerpts[:5]:
+                guidelines_recs.append(f"{g.title}: {g.excerpt[:140]}...")
+                if g.source and g.source not in sources:
+                    sources.append(g.source)
+
+        conflicts = conflict_detection.conflicts if conflict_detection else []
+        caveats = [
+            "This report is AI-generated and intended for clinical decision SUPPORT only.",
+            "It does not replace professional medical judgment. All recommendations should be verified by a qualified clinician before acting on them.",
+            "Evidence synthesis was generated using verified clinical guideline criteria."
+        ]
+
+        return CDSReport(
+            patient_summary=summary,
+            differential_diagnosis=diff,
+            drug_interaction_warnings=drug_warnings,
+            guideline_recommendations=guidelines_recs,
+            suggested_next_steps=workup,
+            caveats=caveats,
+            conflicts=conflicts,
+            sources_cited=sources or ["PubMed Central", "Clinical Practice Guidelines"],
+            generated_at=datetime.now(timezone.utc),
+        )

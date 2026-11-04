@@ -65,10 +65,13 @@ class PatientParserTool:
                 temperature=0.1,  # Low temp for factual extraction
                 max_tokens=1500,
             )
+            if not profile.chief_complaint or "[LLM unavailable" in profile.chief_complaint or len(profile.chief_complaint.strip()) < 5:
+                profile.chief_complaint = patient_text[:200]
+                profile.history_of_present_illness = patient_text
+
             if settings.privacy_mode:
                 logger.info("Parsed patient profile (content redacted — privacy mode)")
             else:
-                # Even outside privacy mode, avoid logging full chief complaint text.
                 num_meds = len(profile.current_medications or [])
                 num_allergies = len(profile.allergies or [])
                 cc_preview = (profile.chief_complaint or "")[:40]

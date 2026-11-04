@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 
-interface Step {
+export interface Step {
   step_id: string;
   step_name: string;
   status: "pending" | "running" | "completed" | "failed" | "skipped";
@@ -12,13 +12,14 @@ interface Step {
   error?: string;
 }
 
-interface CaseSubmission {
+export interface CaseSubmission {
   patient_text: string;
-  include_drug_check: boolean;
-  include_guidelines: boolean;
+  include_drug_check?: boolean;
+  include_guidelines?: boolean;
+  use_langgraph?: boolean;
 }
 
-interface UseAgentWebSocketReturn {
+export interface UseAgentWebSocketReturn {
   steps: Step[];
   report: any | null;
   isRunning: boolean;
@@ -30,17 +31,14 @@ interface UseAgentWebSocketReturn {
 }
 
 function getWsUrl(): string {
-  // If explicitly set via env, use it
   const envUrl = process.env.NEXT_PUBLIC_WS_URL;
   if (envUrl) return envUrl;
 
-  // In browser: derive from current location (works for any deployment)
   if (typeof window !== "undefined") {
     const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
     return `${proto}//${window.location.host}/ws/agent`;
   }
 
-  // SSR fallback
   return "ws://localhost:8002/ws/agent";
 }
 
@@ -54,7 +52,6 @@ export function useAgentWebSocket(): UseAgentWebSocketReturn {
   const wsRef = useRef<WebSocket | null>(null);
 
   const submitCase = useCallback((submission: CaseSubmission) => {
-    // Reset state
     setSteps([]);
     setReport(null);
     setError(null);
@@ -62,7 +59,6 @@ export function useAgentWebSocket(): UseAgentWebSocketReturn {
     setIsWarmingUp(false);
     setWarmUpMessage(null);
 
-    // Close existing connection
     if (wsRef.current) {
       wsRef.current.close();
     }
@@ -75,54 +71,57 @@ export function useAgentWebSocket(): UseAgentWebSocketReturn {
     };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      try {
+        const data = JSON.parse(event.data);
 
-      switch (data.type) {
-        case "ack":
-          // Pipeline acknowledged
-          break;
+        switch (data.type) {
+          case "ack":
+            break;
 
-        case "warming_up":
-          setIsWarmingUp(true);
-          setWarmUpMessage(data.message);
-          break;
+          case "warming_up":
+            setIsWarmingUp(true);
+            setWarmUpMessage(data.message);
+            break;
 
-        case "model_ready":
-          setIsWarmingUp(false);
-          setWarmUpMessage(null);
-          break;
+          case "model_ready":
+            setIsWarmingUp(false);
+            setWarmUpMessage(null);
+            break;
 
-        case "step_update":
-          setSteps((prev) => {
-            const existing = prev.findIndex(
-              (s) => s.step_id === data.step.step_id
-            );
-            if (existing >= 0) {
-              const updated = [...prev];
-              updated[existing] = data.step;
-              return updated;
-            }
-            return [...prev, data.step];
-          });
-          break;
+          case "step_update":
+            setSteps((prev) => {
+              const existing = prev.findIndex(
+                (s) => s.step_id === data.step.step_id
+              );
+              if (existing >= 0) {
+                const updated = [...prev];
+                updated[existing] = data.step;
+                return updated;
+              }
+              return [...prev, data.step];
+            });
+            break;
 
-        case "report":
-          setReport(data.report);
-          break;
+          case "report":
+            setReport(data.report);
+            break;
 
-        case "complete":
-          setIsRunning(false);
-          break;
+          case "complete":
+            setIsRunning(false);
+            break;
 
-        case "error":
-          setError(data.message);
-          setIsRunning(false);
-          break;
+          case "error":
+            setError(data.message);
+            setIsRunning(false);
+            break;
+        }
+      } catch (err) {
+        console.error("Failed to parse WebSocket message:", err);
       }
     };
 
     ws.onerror = () => {
-      setError("WebSocket connection failed. Is the backend running?");
+      setError("WebSocket connection failed. Verify that backend is running on port 8002.");
       setIsRunning(false);
     };
 

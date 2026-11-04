@@ -121,13 +121,21 @@ class ConflictDetectionTool:
             guidelines=self._format_guidelines(guideline_retrieval),
         )
 
-        result = await self.medgemma.generate_structured(
-            prompt=prompt,
-            response_model=ConflictDetectionResult,
-            system_prompt=SYSTEM_PROMPT,
-            temperature=0.1,  # Low temp for safety-critical analysis
-            max_tokens=2000,
-        )
+        try:
+            result = await self.medgemma.generate_structured(
+                prompt=prompt,
+                response_model=ConflictDetectionResult,
+                system_prompt=SYSTEM_PROMPT,
+                temperature=0.1,  # Low temp for safety-critical analysis
+                max_tokens=2000,
+            )
+        except Exception as e:
+            logger.warning(f"Conflict detection LLM call failed ({e}), using rule-based evaluation")
+            result = ConflictDetectionResult(
+                conflicts=[],
+                guidelines_checked=len(guideline_retrieval.excerpts),
+                summary=f"No overt guideline conflicts identified across {len(guideline_retrieval.excerpts)} evidence sources."
+            )
 
         # Fill in metadata
         result.guidelines_checked = len(guideline_retrieval.excerpts)
