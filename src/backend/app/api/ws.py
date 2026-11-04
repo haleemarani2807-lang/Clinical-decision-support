@@ -15,7 +15,7 @@ import logging
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.agent.orchestrator import Orchestrator
+from orchestration.langgraph_orchestrator import OrchestratorFactory
 from app.models.schemas import CaseSubmission
 from app.services.medgemma import MedGemmaService
 
@@ -83,7 +83,7 @@ async def agent_websocket(websocket: WebSocket):
         })
 
         # Run the orchestrator and stream updates
-        orchestrator = Orchestrator()
+        orchestrator = OrchestratorFactory.create(use_langgraph=case.use_langgraph)
 
         async for step in orchestrator.run(case):
             await websocket.send_json({

@@ -1,0 +1,109 @@
+# ==============================================================================
+# Evidence-Verified CDSS — Model Configuration
+# ==============================================================================
+# Change the provider and model here without modifying any application code.
+# Environment variable overrides always win over values set here.
+#
+# Providers supported:
+#   ollama      – local Ollama server (default, free, no API key needed)
+#   medgemma    – Google MedGemma via HuggingFace Dedicated Endpoint (paid)
+#   openai_compat – any OpenAI-compatible endpoint (vLLM, LM Studio, etc.)
+# ==============================================================================
+
+# ── Primary LLM ──────────────────────────────────────────────────────────────
+llm:
+  provider: "ollama"           # ollama | medgemma | openai_compat
+
+  ollama:
+    base_url: "http://localhost:11434"
+    # Production / best-quality local model
+    model: "llama3.1:8b"
+    # Development / low-memory fallback (auto-selected when RAM < 8 GB)
+    fallback_model: "llama3.2:3b"
+    # Per-request parameters
+    temperature: 0.3
+    max_tokens: 4096
+    timeout_seconds: 300
+    # Disk / memory check before pulling models automatically
+    auto_pull: false           # set true only if you accept large downloads
+    min_free_disk_gb: 10       # refuse auto-pull if disk < this value
+    min_free_ram_gb: 6         # fall back to smaller model if RAM < this
+
+  medgemma:
+    # Optional HuggingFace Dedicated Endpoint (OpenAI-compatible TGI)
+    base_url: ""               # e.g. https://YOUR-ENDPOINT.aws.endpoints.huggingface.cloud/v1
+    model: "tgi"
+    api_key_env: "MEDGEMMA_API_KEY"   # read key from environment
+    temperature: 0.3
+    max_tokens: 4096
+
+  openai_compat:
+    base_url: ""               # e.g. http://localhost:1234/v1 for LM Studio
+    model: ""
+    api_key_env: "LLM_API_KEY"
+    temperature: 0.3
+    max_tokens: 4096
+
+# ── Per-agent LLM overrides ──────────────────────────────────────────────────
+# Each agent can use a different model / temperature.
+# Omit a section to inherit the primary LLM settings above.
+agent_overrides:
+  patient_parser:
+    temperature: 0.1           # deterministic extraction
+    max_tokens: 2048
+  clinical_reasoning:
+    temperature: 0.3
+    max_tokens: 3072
+  conflict_detection:
+    temperature: 0.1           # safety-critical; low temperature
+    max_tokens: 2048
+  synthesis:
+    temperature: 0.3
+    max_tokens: 3000
+  evidence_verification:
+    temperature: 0.0           # deterministic entailment
+    max_tokens: 1024
+  uncertainty:
+    temperature: 0.1
+    max_tokens: 1024
+
+# ── Rule-Based Fallbacks ─────────────────────────────────────────────────────
+# When the LLM is unavailable, these rule-based backends are used.
+# They produce lower-quality but deterministic outputs.
+fallbacks:
+  patient_parser: "rule_based"        # regex NER over input text
+  clinical_reasoning: "keyword_based" # symptom-to-condition keyword map
+  evidence_retrieval: "bm25_only"     # skip dense retrieval
+  claim_verification: "lexical"       # keyword overlap instead of NLI
+  synthesis: "template"               # fill-in report template
+
+# ── Embeddings ───────────────────────────────────────────────────────────────
+embeddings:
+  model: "sentence-transformers/all-MiniLM-L6-v2"   # 22 MB, fast, already in use
+  device: "cpu"                        # cpu | cuda | auto
+  batch_size: 32
+  cache_dir: "./data/.embedding_cache"
+
+# ── Reranker ─────────────────────────────────────────────────────────────────
+reranker:
+  model: "cross-encoder/ms-marco-MiniLM-L-6-v2"    # 22 MB
+  device: "cpu"
+  top_k: 10                            # number of candidates sent to reranker
+
+# ── NLI / Entailment (Evidence Verification) ─────────────────────────────────
+entailment:
+  model: "cross-encoder/nli-deberta-v3-small"       # 142 MB
+  device: "cpu"
+  support_threshold: 0.5               # probability above which = SUPPORT
+  refute_threshold: 0.5                # probability above which = REFUTE
+
+# ── Retrieval ────────────────────────────────────────────────────────────────
+retrieval:
+  top_k_bm25: 20
+  top_k_dense: 20
+  top_k_hybrid: 10                     # after fusion
+  top_k_after_rerank: 5
+  bm25_weight: 0.4
+  dense_weight: 0.6
+  pubmed_max_results: 10
+  pubmed_cache_ttl_hours: 24

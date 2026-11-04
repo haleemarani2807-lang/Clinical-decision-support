@@ -1,0 +1,117 @@
+version: "3.9"
+
+# ==============================================================================
+# Evidence-Verified CDSS — Docker Compose
+# ==============================================================================
+# Quick start:
+#   docker-compose up            → runs backend + frontend + SQLite (default)
+#   docker-compose --profile pg up  → also starts PostgreSQL
+#   docker-compose --profile ollama up  → also starts Ollama container
+#
+# Set COMPOSE_PROFILES=pg,ollama to enable all optional services.
+# ==============================================================================
+
+services:
+
+  # ── Backend (FastAPI) ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: ../../Dockerfile
+    container_name: cdss-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_CONFIG_PATH=/app/model_config.yaml
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/cdss.db}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - MEDGEMMA_API_KEY=${MEDGEMMA_API_KEY:-}
+      - MEDGEMMA_BASE_URL=${MEDGEMMA_BASE_URL:-}
+      - PUBMED_API_KEY=${PUBMED_API_KEY:-}
+      - OPENFDA_API_KEY=${OPENFDA_API_KEY:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+      - CHROMA_PERSIST_DIR=/app/data/chroma
+      - PYTHONPATH=/app
+    volumes:
+      - ./src/backend:/app
+      - ./model_config.yaml:/app/model_config.yaml:ro
+      - ./data:/app/data
+    depends_on:
+      - ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - cdss-net
+
+  # ── Frontend (Next.js) ──────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile.frontend
+    container_name: cdss-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - cdss-net
+
+  # ── Ollama (local LLM server) ────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: cdss-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    restart: unless-stopped
+    networks:
+      - cdss-net
+    # GPU support — uncomment if you have NVIDIA GPU + nvidia-container-toolkit
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  # ── PostgreSQL (optional — use --profile pg) ─────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: cdss-postgres
+    profiles: ["pg"]
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=cdss
+      - POSTGRES_USER=${POSTGRES_USER:-cdss}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-cdss_local_dev}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cdss"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - cdss-net
+
+volumes:
+  ollama-models:
+  postgres-data:
+
+networks:
+  cdss-net:
+    driver: bridge

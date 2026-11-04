@@ -70,6 +70,8 @@ class MedGemmaService:
                 self._client = AsyncOpenAI(
                     api_key=self._api_key or "not-needed",
                     base_url=self._base_url or "http://localhost:8000/v1",
+                    timeout=5.0,
+                    max_retries=1,
                 )
             except ImportError:
                 raise RuntimeError(

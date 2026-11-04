@@ -1,30 +1,77 @@
-# MedGemma CDS Agent - Backend Dependencies
+# Evidence-Verified CDSS — Backend Dependencies
 # Python 3.10+
+#
+# Installation:
+#   pip install -r requirements.txt
+#
+# For GPU acceleration (optional):
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
 
-# Web Framework
+# ── Web Framework ─────────────────────────────────────────────────────────────
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
 websockets==12.0
+python-multipart==0.0.10
 
-# Configuration
+# ── Configuration ─────────────────────────────────────────────────────────────
 pydantic-settings==2.5.2
 python-dotenv==1.0.1
+pyyaml>=6.0.2
 
-# MedGemma / LLM
+# ── LLM / Model Clients ───────────────────────────────────────────────────────
+# Ollama (local, default) — communicates via httpx (already listed below)
+# MedGemma / OpenAI-compatible endpoint (optional)
 openai==1.51.0
-transformers==4.45.0
-torch==2.4.1
-accelerate==0.34.2
+# Local transformers (optional, for local HF models)
+transformers>=4.45.0
+# torch is a heavy dependency — install separately for GPU or use CPU-only:
+# pip install torch==2.4.1+cpu --index-url https://download.pytorch.org/whl/cpu
+torch>=2.4.1
+accelerate>=0.34.2
 
-# HTTP Client
+# ── HTTP Client ───────────────────────────────────────────────────────────────
 httpx==0.27.2
 
-# RAG / Vector Store
+# ── RAG / Vector Store ────────────────────────────────────────────────────────
 chromadb==0.5.7
-sentence-transformers==3.1.1
+sentence-transformers>=3.1.1
+faiss-cpu>=1.8.0
+rank-bm25>=0.2.2
 
-# MCP (Model Context Protocol)
+# ── Reranker / NLI Entailment ─────────────────────────────────────────────────
+# Uses cross-encoder models from sentence-transformers (already included above)
+
+# ── Database ──────────────────────────────────────────────────────────────────
+sqlalchemy>=2.0.0
+aiosqlite>=0.20.0          # async SQLite driver
+# psycopg2-binary>=2.9.0   # uncomment for PostgreSQL
+
+# ── Data Processing ───────────────────────────────────────────────────────────
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+
+# ── Medical NLP ───────────────────────────────────────────────────────────────
+# spaCy with medical model (installed separately — see setup instructions)
+# pip install spacy && python -m spacy download en_core_web_sm
+spacy>=3.7.0
+
+# ── PubMed / External APIs ────────────────────────────────────────────────────
+# Uses httpx (already listed above) + standard library xml.etree
+
+# ── PDF Export ────────────────────────────────────────────────────────────────
+reportlab>=4.0.0
+
+# ── Evaluation ────────────────────────────────────────────────────────────────
+# scikit-learn already listed above
+
+# ── MCP (Model Context Protocol) ─────────────────────────────────────────────
 mcp>=1.0.0
 
-# Utilities
-python-multipart==0.0.10
+# ── Kaggle Dataset Download ───────────────────────────────────────────────────
+kaggle>=1.6.0
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+tqdm>=4.66.0
+tenacity>=8.2.0            # retry with exponential backoff
+cachetools>=5.3.0

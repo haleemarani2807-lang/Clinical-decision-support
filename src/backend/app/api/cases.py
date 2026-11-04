@@ -10,7 +10,10 @@ from typing import Dict
 
 from fastapi import APIRouter, HTTPException
 
-from app.agent.orchestrator import Orchestrator
+from typing import Any
+from orchestration.langgraph_orchestrator import OrchestratorFactory
+from reports.report_generator import ReportGenerator
+from fastapi.responses import PlainTextResponse
 from app.config import settings
 from app.models.schemas import (
     AgentState,
@@ -23,7 +26,7 @@ router = APIRouter()
 
 # In-memory store for active/completed cases
 # In production, use Redis or a database
-_cases: Dict[str, Orchestrator] = {}
+_cases: Dict[str, Any] = {}
 _case_timestamps: Dict[str, float] = {}
 
 
@@ -47,7 +50,7 @@ async def submit_case(case: CaseSubmission):
     The agent pipeline runs asynchronously. Use the WebSocket endpoint
     or poll /api/cases/{case_id} for real-time updates.
     """
-    orchestrator = Orchestrator()
+    orchestrator = OrchestratorFactory.create(use_langgraph=case.use_langgraph)
 
     # Generate a case_id upfront so we can return it immediately
     case_id = str(uuid.uuid4())[:8]
@@ -102,3 +105,20 @@ async def list_cases():
         raise HTTPException(status_code=403, detail="Case listing is disabled in privacy mode")
     _evict_expired_cases()
     return list(_cases.keys())
+
+@router.get("/{case_id}/markdown", response_class=PlainTextResponse)
+async def get_case_markdown(case_id: str):
+    """Export report as formatted Clinical Decision Support Markdown."""
+    if settings.privacy_mode:
+        raise HTTPException(status_code=403, detail="Case retrieval is disabled in privacy mode")
+
+    _evict_expired_cases()
+    orchestrator = _cases.get(case_id)
+    if not orchestrator or not orchestrator.state:
+        raise HTTPException(status_code=404, detail=f"Case {case_id} not found")
+
+    report = orchestrator.get_result()
+    if not report:
+        raise HTTPException(status_code=404, detail=f"No report available for case {case_id}")
+
+    return ReportGenerator.to_markdown(report)
