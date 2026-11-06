@@ -1,0 +1,87 @@
+[
+  {
+    "case_id": "syn_001",
+    "specialty": "Cardiology",
+    "diagnosis_ground_truth": "Acute Coronary Syndrome / NSTEMI",
+    "patient_text": "65-year-old male with crushing substernal chest pain radiating to left arm for 2 hours. History of hypertension, hyperlipidemia, type 2 diabetes. Current medications: lisinopril 10mg daily, atorvastatin 40mg, metformin 500mg BID. No known drug allergies. Vitals: BP 158/94 mmHg, HR 98 bpm, RR 18/min, SpO2 96%, Temp 37.1°C. Labs: Troponin I 0.08 ng/mL (elevated), BNP 180 pg/mL, Glucose 210 mg/dL, Creatinine 1.1 mg/dL, HbA1c 8.2%. ECG: ST depression in V4-V6, no ST elevation.",
+    "missing_fields": [],
+    "contradictions": [],
+    "required_evidence": [
+      "ACS guidelines",
+      "antiplatelet therapy",
+      "troponin interpretation"
+    ],
+    "expected_uncertainty": "low",
+    "synthetic": true,
+    "variant_type": "full_case",
+    "data_source": "synthetic_hand_crafted_v1"
+  },
+  {
+    "case_id": "syn_002",
+    "specialty": "Emergency Medicine",
+    "diagnosis_ground_truth": "Sepsis / Bacterial Pneumonia",
+    "patient_text": "45-year-old female presenting with fever (39.8°C), productive cough with purulent sputum, shortness of breath, and altered mental status. Past medical history: COPD, alcohol use disorder. Current medications: tiotropium inhaler, albuterol PRN. NKDA. Vitals: BP 88/52 mmHg, HR 124 bpm, RR 28/min, SpO2 88% on room air. Labs: WBC 18.2 K/uL with 85% neutrophils, Lactate 3.8 mmol/L, Procalcitonin 8.4 ng/mL, Creatinine 2.1 mg/dL, Sodium 128 mEq/L. Chest X-ray: right lower lobe consolidation.",
+    "missing_fields": [],
+    "contradictions": [],
+    "required_evidence": [
+      "Surviving Sepsis Campaign",
+      "antibiotic selection",
+      "fluid resuscitation"
+    ],
+    "expected_uncertainty": "low",
+    "synthetic": true,
+    "variant_type": "full_case",
+    "data_source": "synthetic_hand_crafted_v1"
+  },
+  {
+    "case_id": "syn_003",
+    "specialty": "Endocrinology",
+    "diagnosis_ground_truth": "Diabetic Ketoacidosis",
+    "patient_text": "22-year-old male with type 1 diabetes presenting with nausea, vomiting, abdominal pain, polyuria, polydipsia for 2 days. Stopped insulin 3 days ago due to illness. Current medications: insulin glargine (when compliant). Vitals: BP 102/68 mmHg, HR 112 bpm, RR 24/min, SpO2 99%, Temp 37.4°C. Labs: Glucose 520 mg/dL, pH 7.18, Bicarbonate 10 mEq/L, Anion gap 26, Ketones 4+ on urinalysis, Potassium 5.8 mEq/L. No known allergies.",
+    "missing_fields": [],
+    "contradictions": [],
+    "required_evidence": [
+      "DKA management",
+      "insulin protocol",
+      "electrolyte replacement"
+    ],
+    "expected_uncertainty": "low",
+    "synthetic": true,
+    "variant_type": "full_case",
+    "data_source": "synthetic_hand_crafted_v1"
+  },
+  {
+    "case_id": "syn_004",
+    "specialty": "Neurology",
+    "diagnosis_ground_truth": "Ischemic Stroke",
+    "patient_text": "72-year-old female with sudden onset right arm weakness and expressive aphasia 90 minutes ago. History: atrial fibrillation (not on anticoagulation), hypertension. Current medications: metoprolol 25mg BID, amlodipine 5mg. Allergies: penicillin (rash). Vitals: BP 182/104 mmHg, HR 88 irregular, RR 16/min, SpO2 97%. NIHSS: 14. CT head: no hemorrhage. Last known well: 90 minutes ago.",
+    "missing_fields": [],
+    "contradictions": [],
+    "required_evidence": [
+      "tPA eligibility",
+      "stroke guidelines",
+      "anticoagulation in AF"
+    ],
+    "expected_uncertainty": "low",
+    "synthetic": true,
+    "variant_type": "full_case",
+    "data_source": "synthetic_hand_crafted_v1"
+  },
+  {
+    "case_id": "syn_005",
+    "specialty": "Pulmonology",
+    "diagnosis_ground_truth": "COPD Exacerbation",
+    "patient_text": "68-year-old male, 40 pack-year smoker, with worsening dyspnea, increased sputum production (yellow-green), and mild confusion over 3 days. Known COPD (FEV1/FVC 0.6, FEV1 42% predicted). Current medications: tiotropium, salmeterol/fluticasone, albuterol PRN. NKDA. Vitals: BP 136/82 mmHg, HR 106 bpm, RR 26/min, SpO2 84% on room air, Temp 37.9°C. ABG: pH 7.31, PaCO2 58 mmHg, PaO2 52 mmHg, HCO3 28 mEq/L.",
+    "missing_fields": [],
+    "contradictions": [],
+    "required_evidence": [
+      "GOLD COPD guidelines",
+      "NIV indications",
+      "antibiotic use"
+    ],
+    "expected_uncertainty": "low",
+    "synthetic": true,
+    "variant_type": "full_case",
+    "data_source": "synthetic_hand_crafted_v1"
+  }
+]

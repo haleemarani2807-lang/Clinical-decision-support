@@ -1,0 +1,242 @@
+[
+  {
+    "case_id": "syn_001_no_vitals",
+    "specialty": "Cardiology",
+    "diagnosis_ground_truth": "Acute Coronary Syndrome / NSTEMI",
+    "patient_text": "65-year-old male with crushing substernal chest pain radiating to left arm for 2 hours. History of hypertension, hyperlipidemia, type 2 diabetes. No known drug allergies. Labs: Troponin I 0.08 ng/mL (elevated), BNP 180 pg/mL, Glucose 210 mg/dL, Creatinine 1.1 mg/dL, HbA1c 8.2%. ECG: ST depression in V4-V6, no ST elevation.",
+    "missing_fields": [
+      "vitals"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "ACS guidelines",
+      "antiplatelet therapy",
+      "troponin interpretation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Vital signs omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_001"
+  },
+  {
+    "case_id": "syn_001_no_labs",
+    "specialty": "Cardiology",
+    "diagnosis_ground_truth": "Acute Coronary Syndrome / NSTEMI",
+    "patient_text": "65-year-old male with crushing substernal chest pain radiating to left arm for 2 hours. History of hypertension, hyperlipidemia, type 2 diabetes. Current medications: lisinopril 10mg daily, atorvastatin 40mg, metformin 500mg BID. No known drug allergies. Vitals: BP 158/94 mmHg, HR 98 bpm, RR 18/min, SpO2 96%, Temp 37.1°C. ECG: ST depression in V4-V6, no ST elevation.",
+    "missing_fields": [
+      "labs"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "ACS guidelines",
+      "antiplatelet therapy",
+      "troponin interpretation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Laboratory results omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_001"
+  },
+  {
+    "case_id": "syn_001_no_medications",
+    "specialty": "Cardiology",
+    "diagnosis_ground_truth": "Acute Coronary Syndrome / NSTEMI",
+    "patient_text": "65-year-old male with crushing substernal chest pain radiating to left arm for 2 hours. History of hypertension, hyperlipidemia, type 2 diabetes. No known drug allergies. Vitals: BP 158/94 mmHg, HR 98 bpm, RR 18/min, SpO2 96%, Temp 37.1°C. ECG: ST depression in V4-V6, no ST elevation.",
+    "missing_fields": [
+      "medications"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "ACS guidelines",
+      "antiplatelet therapy",
+      "troponin interpretation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Medication list omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_001"
+  },
+  {
+    "case_id": "syn_001_no_allergies",
+    "specialty": "Cardiology",
+    "diagnosis_ground_truth": "Acute Coronary Syndrome / NSTEMI",
+    "patient_text": "65-year-old male with crushing substernal chest pain radiating to left arm for 2 hours. History of hypertension, hyperlipidemia, type 2 diabetes. Current medications: lisinopril 10mg daily, atorvastatin 40mg, metformin 500mg BID. Vitals: BP 158/94 mmHg, HR 98 bpm, RR 18/min, SpO2 96%, Temp 37.1°C. Labs: Troponin I 0.08 ng/mL (elevated), BNP 180 pg/mL, Glucose 210 mg/dL, Creatinine 1.1 mg/dL, HbA1c 8.2%. ECG: ST depression in V4-V6, no ST elevation.",
+    "missing_fields": [
+      "allergies"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "ACS guidelines",
+      "antiplatelet therapy",
+      "troponin interpretation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Allergy status omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_001"
+  },
+  {
+    "case_id": "syn_002_no_vitals",
+    "specialty": "Emergency Medicine",
+    "diagnosis_ground_truth": "Sepsis / Bacterial Pneumonia",
+    "patient_text": "45-year-old female presenting with fever (39.8°C), productive cough with purulent sputum, shortness of breath, and altered mental status. Past medical history: COPD, alcohol use disorder. NKDA. Labs: WBC 18.2 K/uL with 85% neutrophils, Lactate 3.8 mmol/L, Procalcitonin 8.4 ng/mL, Creatinine 2.1 mg/dL, Sodium 128 mEq/L. Chest X-ray: right lower lobe consolidation.",
+    "missing_fields": [
+      "vitals"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "Surviving Sepsis Campaign",
+      "antibiotic selection",
+      "fluid resuscitation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Vital signs omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_002"
+  },
+  {
+    "case_id": "syn_002_no_labs",
+    "specialty": "Emergency Medicine",
+    "diagnosis_ground_truth": "Sepsis / Bacterial Pneumonia",
+    "patient_text": "45-year-old female presenting with fever (39.8°C), productive cough with purulent sputum, shortness of breath, and altered mental status. Past medical history: COPD, alcohol use disorder. Current medications: tiotropium inhaler, albuterol PRN. NKDA. Vitals: BP 88/52 mmHg, HR 124 bpm, RR 28/min, SpO2 88% on room air. Chest X-ray: right lower lobe consolidation.",
+    "missing_fields": [
+      "labs"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "Surviving Sepsis Campaign",
+      "antibiotic selection",
+      "fluid resuscitation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Laboratory results omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_002"
+  },
+  {
+    "case_id": "syn_002_no_medications",
+    "specialty": "Emergency Medicine",
+    "diagnosis_ground_truth": "Sepsis / Bacterial Pneumonia",
+    "patient_text": "45-year-old female presenting with fever (39.8°C), productive cough with purulent sputum, shortness of breath, and altered mental status. Past medical history: COPD, alcohol use disorder. NKDA. Vitals: BP 88/52 mmHg, HR 124 bpm, RR 28/min, SpO2 88% on room air. Chest X-ray: right lower lobe consolidation.",
+    "missing_fields": [
+      "medications"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "Surviving Sepsis Campaign",
+      "antibiotic selection",
+      "fluid resuscitation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Medication list omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_002"
+  },
+  {
+    "case_id": "syn_002_no_allergies",
+    "specialty": "Emergency Medicine",
+    "diagnosis_ground_truth": "Sepsis / Bacterial Pneumonia",
+    "patient_text": "45-year-old female presenting with fever (39.8°C), productive cough with purulent sputum, shortness of breath, and altered mental status. Past medical history: COPD, alcohol use disorder. Current medications: tiotropium inhaler, albuterol PRN. Vitals: BP 88/52 mmHg, HR 124 bpm, RR 28/min, SpO2 88% on room air. Labs: WBC 18.2 K/uL with 85% neutrophils, Lactate 3.8 mmol/L, Procalcitonin 8.4 ng/mL, Creatinine 2.1 mg/dL, Sodium 128 mEq/L. Chest X-ray: right lower lobe consolidation.",
+    "missing_fields": [
+      "allergies"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "Surviving Sepsis Campaign",
+      "antibiotic selection",
+      "fluid resuscitation"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Allergy status omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_002"
+  },
+  {
+    "case_id": "syn_003_no_vitals",
+    "specialty": "Endocrinology",
+    "diagnosis_ground_truth": "Diabetic Ketoacidosis",
+    "patient_text": "22-year-old male with type 1 diabetes presenting with nausea, vomiting, abdominal pain, polyuria, polydipsia for 2 days. Stopped insulin 3 days ago due to illness. Labs: Glucose 520 mg/dL, pH 7.18, Bicarbonate 10 mEq/L, Anion gap 26, Ketones 4+ on urinalysis, Potassium 5.8 mEq/L. No known allergies.",
+    "missing_fields": [
+      "vitals"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "DKA management",
+      "insulin protocol",
+      "electrolyte replacement"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Vital signs omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_003"
+  },
+  {
+    "case_id": "syn_003_no_labs",
+    "specialty": "Endocrinology",
+    "diagnosis_ground_truth": "Diabetic Ketoacidosis",
+    "patient_text": "22-year-old male with type 1 diabetes presenting with nausea, vomiting, abdominal pain, polyuria, polydipsia for 2 days. Stopped insulin 3 days ago due to illness. Current medications: insulin glargine (when compliant). Vitals: BP 102/68 mmHg, HR 112 bpm, RR 24/min, SpO2 99%, Temp 37.4°C. No known allergies.",
+    "missing_fields": [
+      "labs"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "DKA management",
+      "insulin protocol",
+      "electrolyte replacement"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Laboratory results omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_003"
+  },
+  {
+    "case_id": "syn_003_no_medications",
+    "specialty": "Endocrinology",
+    "diagnosis_ground_truth": "Diabetic Ketoacidosis",
+    "patient_text": "22-year-old male with type 1 diabetes presenting with nausea, vomiting, abdominal pain, polyuria, polydipsia for 2 days. Stopped insulin 3 days ago due to illness. Vitals: BP 102/68 mmHg, HR 112 bpm, RR 24/min, SpO2 99%, Temp 37.4°C. No known allergies.",
+    "missing_fields": [
+      "medications"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "DKA management",
+      "insulin protocol",
+      "electrolyte replacement"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Medication list omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_003"
+  },
+  {
+    "case_id": "syn_003_no_allergies",
+    "specialty": "Endocrinology",
+    "diagnosis_ground_truth": "Diabetic Ketoacidosis",
+    "patient_text": "22-year-old male with type 1 diabetes presenting with nausea, vomiting, abdominal pain, polyuria, polydipsia for 2 days. Stopped insulin 3 days ago due to illness. Current medications: insulin glargine (when compliant). Vitals: BP 102/68 mmHg, HR 112 bpm, RR 24/min, SpO2 99%, Temp 37.4°C. Labs: Glucose 520 mg/dL, pH 7.18, Bicarbonate 10 mEq/L, Anion gap 26, Ketones 4+ on urinalysis, Potassium 5.8 mEq/L.",
+    "missing_fields": [
+      "allergies"
+    ],
+    "contradictions": [],
+    "required_evidence": [
+      "DKA management",
+      "insulin protocol",
+      "electrolyte replacement"
+    ],
+    "expected_uncertainty": "low",
+    "omission_description": "Allergy status omitted",
+    "synthetic": true,
+    "variant_type": "missing_information",
+    "parent_case_id": "syn_003"
+  }
+]
