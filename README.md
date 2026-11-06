@@ -338,8 +338,9 @@ curl -X POST http://localhost:8000/api/cases/submit \
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE).
 
 This project uses MedGemma and other models from Google's [Health AI Developer Foundations (HAI-DEF)](https://developers.google.com/health-ai-developer-foundations), subject to the [HAI-DEF Terms of Use](https://developers.google.com/health-ai-developer-foundations/terms).
 
 > **Disclaimer:** This is a research / demonstration system. It is NOT a substitute for professional medical judgment. All clinical decisions must be made by qualified healthcare professionals.
+#   C l i n i c a l - d e c i s i o n - s u p p o r t  
+ 
